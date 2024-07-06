@@ -1,6 +1,8 @@
 # Weather Application with Leaflet
 This weather application is a simple web app that provides weather information for predefined cities and allows users to add new cities. It also provides additional details for each city, such as GPS coordinates, wind speed, and humidity. The map functionality is implemented using Leaflet.
 
+![App Image](./public/app_img.png)
+
 ## Features
 - Display weather information for 5 predefined cities
 - Retrieve weather data from an API
