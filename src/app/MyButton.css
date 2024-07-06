@@ -1,0 +1,20 @@
+.my-button {
+    background-color: darkblue;
+    border: 2px solid gray;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 15px;
+  }
+  
+  .my-button:hover {
+    border: 2px solid blue;
+    background-color: black;
+  }
+  

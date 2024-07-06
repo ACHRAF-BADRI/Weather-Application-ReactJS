@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Weather Application with Leaflet
+This weather application is a simple web app that provides weather information for predefined cities and allows users to add new cities. It also provides additional details for each city, such as GPS coordinates, wind speed, and humidity. The map functionality is implemented using Leaflet.
+
+## Features
+- Display weather information for 5 predefined cities
+- Retrieve weather data from an API
+- Add new cities via a search bar
+- Autosuggestion of city names when typing in the search bar
+- Save cities to local storage
+- Reset button to clear the saved cities to local storage beside the 5 predefined cities
+- View additional details for each city
+- Responsive design for desktop and mobile devices
+
+## Technologies Used
+- ReactJS
+- NextJS
+- Leaflet (for map functionality)
+- Bootstrap
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
 
-```bash
+cd El_Badri_Achraf_prj
+npm install react-leaflet leaflet
+
+2. Add your API Key :
+
+(you can get your API key from this web site >>> [pip](https://www.weatherapi.com/docs) after creating an account)
+
+Add your API Key to the variable "apiKey" in this files :
+- pages/detail_city.js
+- component/weatherDashboard.js
+- component/weatherCard.js
+
+3. Run the development server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open your browser and navigate to http://localhost:3000 and click on the button "My Weather App" to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Upon launching the app, you will see weather information for 5 predefined cities.
+- Click on a city to view additional details.
+- Use the search bar to add new cities.
+- Weather data for added cities will be saved to local storage.
 
-## Learn More
+## Bonus Features
+- Autosuggestion for city names in the search bar.
+- Error message display for network/offline errors.
+- Display a map of the city on the details page using Leaflet with GPS coordinates.
+- Reset button to clear the saved cities to local storage.
 
-To learn more about Next.js, take a look at the following resources:
+## Credits
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- This project was created by EL BADRI ACHRAF.
