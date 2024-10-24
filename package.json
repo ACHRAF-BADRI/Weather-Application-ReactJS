@@ -9,7 +9,7 @@
     "lint": "next lint",
     "export": "next export",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d out"
+    "deploy": "gh-pages -d docs"
   },
   "dependencies": {
     "El_Badri_Achraf_prj": "file:",
