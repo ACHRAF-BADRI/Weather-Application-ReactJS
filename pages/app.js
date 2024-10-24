@@ -10,14 +10,14 @@ const App = () => {
 
   return (
     <div style={{ backgroundImage: "url('background_img.jpg')", backgroundSize: 'cover', minHeight: '100vh' }}>
-        <Navbar />
-        <div id="main">
-          <div className="container">
-            <h1 className="text-center my-4 text-white">Weather Management Application</h1>
-            <WeatherDashboard />
-          </div>
+      <Navbar />
+      <div id="main">
+        <div className="container">
+          <h1 className="text-center my-4 text-white">Weather Management Application</h1>
+          <WeatherDashboard />
         </div>
-        <Footer/>
+      </div>
+      <Footer/>
     </div>
   );
 };

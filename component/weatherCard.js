@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Navbar from '../component/weatherNavbar';
 
 const WeatherCard = ({ city }) => {
   const [weather, setWeather] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const apiKey = '77af47cf2a0f463ca80120809242405';
     fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`)
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to fetch weather data');
+        return response.json();
+      })
       .then(data => setWeather(data))
-      .catch(error => console.error('Error fetching the weather data:', error));
+      .catch(error => setError(error.message));
   }, [city]);
 
-  if (!weather) return (<div><div className='text-center'>Loading weather Infos...</div></div>);
+  if (error) return <div>Error fetching weather data: {error}</div>;
+  if (!weather) return (<div className='text-center'>Loading weather Infos...</div>);
 
   const { current } = weather;
 

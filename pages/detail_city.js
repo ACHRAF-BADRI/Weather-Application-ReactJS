@@ -3,16 +3,13 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../component/weatherNavbar';
 import Footer from '../component/weatherFooter';
 import Link from 'next/link';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-});
+const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
 
 const CityDetails = () => {
   const apiKey = '77af47cf2a0f463ca80120809242405';
@@ -20,7 +17,7 @@ const CityDetails = () => {
   const { city } = router.query;
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [setError] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (city) {
@@ -42,7 +39,7 @@ const CityDetails = () => {
     }
   }, [city]);
 
-  if (loading) return <div><Navbar/><div className='text-center'>Loading {city}'s weather Infos... </div><Footer/></div>;
+  if (loading) return <div><Navbar/><div className='text-center'>Loading {city}&#39;s weather Infos... </div><Footer/></div>;
 
   const { lat, lon, name, country } = weather.location;
 
@@ -90,9 +87,6 @@ const CityDetails = () => {
       </div>
 
       <Footer/>
-      <style jsx>{`
-        @import url('https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css');
-      `}</style>
     </div>
   );
 };

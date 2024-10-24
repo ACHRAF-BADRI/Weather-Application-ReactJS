@@ -13,9 +13,7 @@ const WeatherDashboard = () => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedCities = localStorage.getItem('cities');
-      if (savedCities) {
-        setCities(JSON.parse(savedCities));
-      }
+      if (savedCities) setCities(JSON.parse(savedCities));
     }
   }, []);
 
@@ -39,9 +37,7 @@ const WeatherDashboard = () => {
     if (inputCity.length > 0) {
       fetch(`https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${inputCity}`)
         .then((res) => res.json())
-        .then((data) => {
-          setSuggestions(data.map(suggestion => suggestion.name));
-        })
+        .then((data) => setSuggestions(data.map(suggestion => suggestion.name)))
         .catch(() => setError('Error retrieving suggestions'));
     } else {
       setSuggestions([]);
@@ -67,15 +63,15 @@ const WeatherDashboard = () => {
         <ul className="list-group">
           {suggestions.map((suggestion, index) => (
             <li key={index} className="list-group-item list-group-item-action" onClick={() => {
-                setNewCity(suggestion);
-                setSuggestions([]);
+              setNewCity(suggestion);
+              setSuggestions([]);
             }}>
               {suggestion}
             </li>
           ))}
         </ul>
         
-        <button className="btn btn-primary mt-2 btn-success" onClick={handleAddCity}>Add city</button>
+        <button className="btn btn-success mt-2" onClick={handleAddCity}>Add city</button>
         <button className="btn btn-danger mt-2 ml-2" onClick={handleResetLocalStorage}>Reset</button>
       </div>
       <div className="row">
