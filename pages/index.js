@@ -3,7 +3,7 @@ import WeatherDashboard from '../component/weatherDashboard';
 import Navbar from '../component/weatherNavbar';
 import Footer from '../component/weatherFooter';
 
-const App = () => {
+const Index = () => {
   useEffect(() => {
     document.title = "EL BADRI ACHRAF Weather App";
   }, []);
@@ -22,4 +22,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Index;

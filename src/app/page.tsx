@@ -17,7 +17,7 @@ export default function Home() {
         />
       </div>
       
-      <Link href="../../app" legacyBehavior>
+      <Link href="../../index" legacyBehavior>
         <a className="my-button" style={{ marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
           <div style={{ display: 'inline-block', fontSize: '25px' }}>&gt;&gt;&gt;</div> My Weather App <div style={{ display: 'inline-block', fontSize: '25px' }}>&lt;&lt;&lt;</div>
         </a>

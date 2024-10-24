@@ -25,7 +25,7 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
-        <Link href="/app" legacyBehavior>
+        <Link href="/index" legacyBehavior>
           <a className="navbar-brand">Weather App</a>
         </Link>
         <span className="navbar-text">by EL BADRI ACHRAF</span>
@@ -35,7 +35,7 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ml-auto">
             <li className="nav-item">
-              <Link href="/app" legacyBehavior>
+              <Link href="/index" legacyBehavior>
                 <a className="btn btn-primary mr-2 bg-dark border-dark">Home</a>
               </Link>
             </li>

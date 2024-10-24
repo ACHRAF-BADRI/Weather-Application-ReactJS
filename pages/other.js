@@ -19,7 +19,7 @@ const AutrePage = () => {
           </div>
 
           <div className="text-center mt-4 mb-5">
-            <Link href="/app" legacyBehavior>
+            <Link href="/index" legacyBehavior>
               <a className="btn btn-primary mr-2 bg-dark border-dark">Home</a>
             </Link>
           </div>

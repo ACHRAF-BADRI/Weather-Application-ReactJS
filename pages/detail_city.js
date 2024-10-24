@@ -79,7 +79,7 @@ const CityDetails = () => {
             </div>
           </div>
           <div className="text-center mt-2 mb-4">
-            <Link href={`/app`} legacyBehavior>
+            <Link href={`/index`} legacyBehavior>
               <a className="btn btn-primary mt-4 bg-dark border-dark">Home</a>
             </Link>
           </div>
