@@ -3,7 +3,7 @@ const fr = {
     title: 'Appli Météo',
     description: 'Météo en direct, prévisions et prédictions IA pour vos villes préférées.',
   },
-  nav: { home: 'Accueil', contact: 'Contact', language: 'Langue', lightMode: 'Passer en mode clair', darkMode: 'Passer en mode sombre' },
+  nav: { home: 'Accueil', contact: 'Contact', language: 'Langue', lightMode: 'Passer en mode clair', darkMode: 'Passer en mode sombre', scrollTop: 'Retour en haut' },
   home: {
     title: 'La météo en un coup d’œil',
     subtitle: 'Suivez vos villes, consultez les prévisions et découvrez ce que prévoit l’IA.',

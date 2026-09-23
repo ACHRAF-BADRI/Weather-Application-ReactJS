@@ -3,7 +3,7 @@ const en = {
     title: 'Weather App',
     description: 'Live weather, forecasts and AI predictions for your favourite cities.',
   },
-  nav: { home: 'Home', contact: 'Contact', language: 'Language', lightMode: 'Switch to light mode', darkMode: 'Switch to dark mode' },
+  nav: { home: 'Home', contact: 'Contact', language: 'Language', lightMode: 'Switch to light mode', darkMode: 'Switch to dark mode', scrollTop: 'Back to top' },
   home: {
     title: 'Weather at a glance',
     subtitle: 'Follow your cities, check the forecast and see what the AI expects next.',

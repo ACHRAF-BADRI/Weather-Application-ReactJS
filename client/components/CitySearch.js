@@ -8,6 +8,7 @@ export default function CitySearch({ onAdd }) {
   const listId = useId();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [searching, setSearching] = useState(false);
   const [active, setActive] = useState(-1);
   const [open, setOpen] = useState(false);
   const boxRef = useRef(null);
@@ -16,10 +17,13 @@ export default function CitySearch({ onAdd }) {
     const q = query.trim();
     if (q.length < 2) {
       setSuggestions([]);
+      setSearching(false);
       return undefined;
     }
     const controller = new AbortController();
     const timer = setTimeout(() => {
+      setSearching(true);
+      setOpen(true);
       api
         .search(q, { signal: controller.signal })
         .then((results) => {
@@ -27,7 +31,8 @@ export default function CitySearch({ onAdd }) {
           setActive(-1);
           setOpen(true);
         })
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => setSearching(false));
     }, 250);
     return () => {
       clearTimeout(timer);
@@ -65,13 +70,13 @@ export default function CitySearch({ onAdd }) {
     }
   }
 
-  const showList = open && suggestions.length > 0;
+  const showList = open && (searching || suggestions.length > 0);
 
   return (
     <div ref={boxRef} className="relative flex-1">
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-subtle">
+          <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-subtle">
             ⌕
           </span>
           <input
@@ -98,21 +103,28 @@ export default function CitySearch({ onAdd }) {
 
       {showList && (
         <ul id={listId} role="listbox" className="glass absolute inset-x-0 top-full z-20 mt-2 max-h-72 overflow-auto p-1.5">
-          {suggestions.map((place, index) => (
-            <li
-              key={place.id}
-              id={`${listId}-${index}`}
-              role="option"
-              aria-selected={index === active}
-              onPointerDown={(e) => e.preventDefault()}
-              onClick={() => choose(place)}
-              onMouseEnter={() => setActive(index)}
-              className={`cursor-pointer rounded-2xl px-4 py-3 ${index === active ? 'bg-tint/10' : ''}`}
-            >
-              <span className="font-medium text-fg">{place.name}</span>
-              <span className="text-sm text-subtle">{[place.region, place.country].filter(Boolean).map((s) => `, ${s}`)}</span>
-            </li>
-          ))}
+          {searching
+            ? Array.from({ length: 3 }, (_, i) => (
+                <li key={i} className="px-4 py-3">
+                  <div className="skeleton h-4 w-2/5" />
+                  <div className="skeleton mt-2 h-3 w-1/3" />
+                </li>
+              ))
+            : suggestions.map((place, index) => (
+                <li
+                  key={place.id}
+                  id={`${listId}-${index}`}
+                  role="option"
+                  aria-selected={index === active}
+                  onPointerDown={(e) => e.preventDefault()}
+                  onClick={() => choose(place)}
+                  onMouseEnter={() => setActive(index)}
+                  className={`cursor-pointer rounded-2xl px-4 py-3 ${index === active ? 'bg-tint/10' : ''}`}
+                >
+                  <span className="font-medium text-fg">{place.name}</span>
+                  <span className="text-sm text-subtle">{[place.region, place.country].filter(Boolean).map((s) => `, ${s}`)}</span>
+                </li>
+              ))}
         </ul>
       )}
     </div>

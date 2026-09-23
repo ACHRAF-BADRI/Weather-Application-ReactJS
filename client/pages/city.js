@@ -31,7 +31,7 @@ export default function CityPage() {
   const { data, error, loading, retry } = useFetch((signal) => api.weather(q, lang, { signal }), [q, lang], router.isReady && !!q);
 
   const back = (
-    <Link href="/" className="btn-ghost mb-6">
+    <Link href="/" className="btn-ghost sticky top-20 z-30 mb-6 inline-flex backdrop-blur-md">
       ← {t('city.back')}
     </Link>
   );
@@ -119,11 +119,11 @@ export default function CityPage() {
           <HourlyStrip location={location} forecast={forecast} />
         </div>
 
-        <div className="lg:col-span-2">
-          <ForecastList days={daily} />
+        <div className="lg:col-span-5">
+          <ForecastList days={daily.slice(0, 3)} />
         </div>
 
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-5">
           <AIPrediction q={q} />
         </div>
       </div>

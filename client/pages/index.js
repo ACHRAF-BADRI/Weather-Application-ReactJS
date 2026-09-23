@@ -68,7 +68,7 @@ export default function Home() {
   return (
     <>
       <section className="mb-6 text-center sm:mb-8">
-        <h1 className="bg-gradient-to-r from-fg via-fg-soft to-accent bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-5xl">
+        <h1 className="bg-gradient-to-r from-fg via-fg-soft to-accent bg-clip-text pb-1 text-3xl font-bold leading-tight tracking-tight text-transparent sm:text-5xl">
           {t('home.title')}
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-muted sm:text-lg">{t('home.subtitle')}</p>
