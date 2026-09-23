@@ -1,0 +1,22 @@
+# Render Blueprint: deploys the back-end (server/) as a Node web service.
+# Render > New > Blueprint > pick this repo. Secrets marked `sync: false`
+# are asked for in the dashboard and never stored in the repo.
+services:
+  - type: web
+    name: weather-app-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: WEATHER_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Your Netlify URL, e.g. https://my-weather-app.netlify.app (comma-separate several)
+      - key: ALLOWED_ORIGINS
+        sync: false
