@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Themes: RGB triplets used by the semantic colours in tailwind.config.js ---------- */
+@layer base {
+  :root,
+  :root.dark {
+    color-scheme: dark;
+    --c-page: 2 6 23;
+    --c-fg: 255 255 255;
+    --c-fg-soft: 226 232 240;
+    --c-muted: 203 213 225;
+    --c-subtle: 148 163 184;
+    --c-faint: 100 116 139;
+    --c-tint: 255 255 255;
+    --c-shade: 0 0 0;
+    --c-accent: 125 211 252;
+    --c-ai: 240 171 252;
+    --c-chart-min: 165 180 252;
+    --c-warn: 253 230 138;
+    --c-success: 110 231 183;
+    --c-danger: 253 164 175;
+    --glass-bg: rgb(255 255 255 / 0.06);
+    --glass-border: rgb(255 255 255 / 0.1);
+    --glass-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2);
+    --page-bg:
+      radial-gradient(60rem 40rem at 10% -10%, rgb(56 189 248 / 0.22), transparent 60%),
+      radial-gradient(50rem 35rem at 110% 10%, rgb(129 140 248 / 0.2), transparent 60%),
+      linear-gradient(180deg, #0b1224 0%, #020617 100%);
+  }
+
+  :root.light {
+    color-scheme: light;
+    --c-page: 241 245 249;
+    --c-fg: 15 23 42;
+    --c-fg-soft: 30 41 59;
+    --c-muted: 51 65 85;
+    --c-subtle: 71 85 105;
+    --c-faint: 100 116 139;
+    --c-tint: 15 23 42;
+    --c-shade: 148 163 184;
+    --c-accent: 2 132 199;
+    --c-ai: 162 28 175;
+    --c-chart-min: 79 70 229;
+    --c-warn: 146 64 14;
+    --c-success: 4 120 87;
+    --c-danger: 190 18 60;
+    --glass-bg: rgb(255 255 255 / 0.72);
+    --glass-border: rgb(15 23 42 / 0.08);
+    --glass-shadow: 0 20px 25px -5px rgb(100 116 139 / 0.15);
+    --page-bg:
+      radial-gradient(60rem 40rem at 10% -10%, rgb(125 211 252 / 0.45), transparent 60%),
+      radial-gradient(50rem 35rem at 110% 10%, rgb(199 210 254 / 0.6), transparent 60%),
+      linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply min-h-screen bg-page text-fg antialiased;
+    background-image: var(--page-bg);
+    background-attachment: fixed;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-sky-400 ring-offset-2 ring-offset-page;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-tint/20;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply rounded-3xl backdrop-blur-xl;
+    background-color: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-sky-500 text-slate-950 hover:bg-sky-400 active:scale-[0.98];
+  }
+  .btn-danger {
+    @apply btn bg-rose-500 text-white hover:bg-rose-400 active:scale-[0.98];
+  }
+  .btn-ghost {
+    @apply btn border border-tint/15 bg-tint/5 text-fg-soft hover:bg-tint/10;
+  }
+  .input {
+    @apply w-full rounded-2xl border border-tint/10 bg-tint/5 px-4 py-3 text-base text-fg
+      placeholder:text-subtle transition focus:border-sky-400 focus:bg-tint/10 focus:outline-none;
+  }
+  .label {
+    @apply text-xs font-medium uppercase tracking-wider text-subtle;
+  }
+  .skeleton {
+    @apply animate-pulse rounded-xl bg-tint/10;
+  }
+}
+
+/* Confirmation dialog: the glass needs an opaque base to stay readable over the page */
+.confirm-dialog {
+  background-color: rgb(var(--c-page) / 0.92);
+}
+.confirm-dialog[open] {
+  animation: dialog-in 0.18s ease-out;
+}
+.confirm-dialog::backdrop {
+  background: rgb(2 6 23 / 0.55);
+  backdrop-filter: blur(4px);
+  animation: backdrop-in 0.18s ease-out;
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+}
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confirm-dialog[open],
+  .confirm-dialog::backdrop {
+    animation: none;
+  }
+}
+
+/* Toasts */
+.toast {
+  background-color: rgb(var(--c-page) / 0.92);
+  animation: toast-in 0.25s ease-out;
+}
+.toast-progress {
+  animation-name: toast-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.97);
+  }
+}
+@keyframes toast-progress {
+  to {
+    transform: scaleX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
+
+/* Leaflet map */
+.leaflet-container {
+  @apply h-full w-full rounded-3xl bg-page font-sans;
+}
+/* Standard OSM tiles, recoloured to a dark map in dark mode (no tile API key needed) */
+.dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9) saturate(0.6);
+}
+.dark .leaflet-control-attribution {
+  @apply !bg-slate-900/70 !text-slate-400;
+}
+.dark .leaflet-control-attribution a {
+  @apply !text-sky-300;
+}
