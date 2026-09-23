@@ -9,7 +9,7 @@ const client = config.anthropicApiKey ? new Anthropic({ apiKey: config.anthropic
 export const aiEnabled = Boolean(client);
 
 const SYSTEM_PROMPT = `You write the "AI insight" panel of a consumer weather app.
-You receive JSON with a city's current conditions, the provider's 3-day forecast, and a
+You receive JSON with a city's current conditions, the 7-day forecast, and a
 statistical model's temperature/rain predictions for the following days (with confidence).
 Write for a general audience in the requested language ("en" = English, "fr" = French).
 - summary: 2-3 sentences describing what the coming week looks like and how sure we are.

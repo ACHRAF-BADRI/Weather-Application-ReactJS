@@ -2,18 +2,18 @@ import { weatherApi } from '../weatherApi.js';
 import { TtlCache } from '../cache.js';
 import { predict } from './forecastModel.js';
 import { buildInsight } from './insights.js';
+import { buildDailyForecast } from '../dailyForecast.js';
 
 const HISTORY_DAYS = 7;
 const HOUR = 60 * 60 * 1000;
 const cache = new TtlCache(200);
 
-const toDay = (fd, source) => ({
-  date: fd.date,
-  max: fd.day.maxtemp_c,
-  min: fd.day.mintemp_c,
-  precip: fd.day.totalprecip_mm,
-  chanceOfRain: source === 'forecast' ? fd.day.daily_chance_of_rain : undefined,
-  source,
+const historyDay = ({ date, day }) => ({
+  date,
+  max: day.maxtemp_c,
+  min: day.mintemp_c,
+  precip: day.totalprecip_mm,
+  source: 'history',
 });
 
 function isoDaysAgo(localDate, n) {
@@ -40,8 +40,16 @@ export async function getPrediction(q, lang) {
   );
   const observed = history
     .filter((r) => r.status === 'fulfilled' && r.value.forecast?.forecastday?.[0])
-    .map((r) => toDay(r.value.forecast.forecastday[0], 'history'));
-  const forecast = forecastData.forecast.forecastday.map((fd) => toDay(fd, 'forecast'));
+    .map((r) => historyDay(r.value.forecast.forecastday[0]));
+  // 7-day forecast (WeatherAPI + Open-Meteo); the model then predicts the days after it.
+  const forecast = (await buildDailyForecast(forecastData, lang)).map(({ date, max, min, precip, chanceOfRain }) => ({
+    date,
+    max,
+    min,
+    precip,
+    chanceOfRain,
+    source: 'forecast',
+  }));
 
   const prediction = predict([...observed, ...forecast], 4);
   const currentSummary = {

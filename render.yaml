@@ -17,6 +17,11 @@ services:
         sync: false
       - key: ANTHROPIC_API_KEY
         sync: false
+      # Contact form emails (see server/.env.example)
+      - key: RESEND_API_KEY
+        sync: false
+      - key: CONTACT_TO_EMAIL
+        sync: false
       # Your Netlify URL, e.g. https://my-weather-app.netlify.app (comma-separate several)
       - key: ALLOWED_ORIGINS
         sync: false

@@ -74,7 +74,7 @@ export default function CityPage() {
     );
   }
 
-  const { location, current, forecast } = data;
+  const { location, current, forecast, daily } = data;
   const place = [location.name, location.region, location.country].filter(Boolean).join(', ');
 
   return (
@@ -120,7 +120,7 @@ export default function CityPage() {
         </div>
 
         <div className="lg:col-span-2">
-          <ForecastList forecast={forecast} />
+          <ForecastList days={daily} />
         </div>
 
         <div className="lg:col-span-3">

@@ -15,6 +15,10 @@ export default function Footer() {
           {t('footer.poweredBy')}{' '}
           <a className="text-accent hover:underline" href="https://www.weatherapi.com/" title="Free Weather API">
             WeatherAPI.com
+          </a>{' '}
+          &amp;{' '}
+          <a className="text-accent hover:underline" href="https://open-meteo.com/">
+            Open-Meteo
           </a>
         </p>
       </div>

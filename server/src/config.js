@@ -30,4 +30,13 @@ export const config = {
 
   // Comma-separated list of front-end origins allowed to call this API.
   allowedOrigins: list(process.env.ALLOWED_ORIGINS, 'http://localhost:3000'),
+
+  // Contact form emails (optional: without these the form answers "not configured").
+  contact: {
+    resendApiKey: process.env.RESEND_API_KEY?.trim() || null,
+    toEmail: process.env.CONTACT_TO_EMAIL?.trim() || null,
+    // Resend's shared test sender works without a domain, but can only deliver to the
+    // email address of your Resend account. Use your own verified domain to lift that.
+    fromEmail: process.env.CONTACT_FROM_EMAIL?.trim() || 'Weather App <onboarding@resend.dev>',
+  },
 };
