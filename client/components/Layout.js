@@ -2,6 +2,7 @@ import Head from 'next/head';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import ServerStatus from './ServerStatus';
+import ScrollToTop from './ScrollToTop';
 import { useI18n } from '@/lib/i18n';
 
 export default function Layout({ children }) {
@@ -15,6 +16,7 @@ export default function Layout({ children }) {
       <Navbar />
       <ServerStatus />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-12 pt-3 sm:px-6 sm:pt-5">{children}</main>
+      <ScrollToTop />
       <Footer />
     </div>
   );

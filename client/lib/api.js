@@ -9,29 +9,32 @@ export class ApiError extends Error {
   }
 }
 
-async function get(path, params, { signal } = {}) {
+async function request(path, { params, body, signal } = {}) {
   const url = new URL(`${API_URL}${path}`);
   Object.entries(params || {}).forEach(([key, value]) => value != null && url.searchParams.set(key, value));
 
   let response;
   try {
-    response = await fetch(url, { signal });
+    response = await fetch(url, body
+      ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal }
+      : { signal });
   } catch (error) {
     if (error.name === 'AbortError') throw error;
     throw new ApiError(0, 'network');
   }
-  const body = await response.json().catch((error) => {
+  const data = await response.json().catch((error) => {
     // A request cancelled while its body is being read must stay cancelled, not become `{}`.
     if (error.name === 'AbortError') throw error;
     return {};
   });
-  if (!response.ok) throw new ApiError(response.status, body.error || response.statusText);
-  return body;
+  if (!response.ok) throw new ApiError(response.status, data.error || response.statusText);
+  return data;
 }
 
 export const api = {
-  health: (options) => get('/api/health', null, options),
-  weather: (q, lang, options) => get('/api/weather', { q, lang }, options),
-  search: (q, options) => get('/api/search', { q }, options),
-  predict: (q, lang, options) => get('/api/predict', { q, lang }, options),
+  health: (options) => request('/api/health', options),
+  weather: (q, lang, options) => request('/api/weather', { params: { q, lang }, ...options }),
+  search: (q, options) => request('/api/search', { params: { q }, ...options }),
+  predict: (q, lang, options) => request('/api/predict', { params: { q, lang }, ...options }),
+  contact: (message) => request('/api/contact', { body: message }),
 };

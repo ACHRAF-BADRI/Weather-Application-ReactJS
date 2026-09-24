@@ -1,51 +1,57 @@
 // Turns the numbers into a short, human summary + practical tips.
-// Uses Claude when ANTHROPIC_API_KEY is set; otherwise (or on any failure)
-// falls back to deterministic rule-based text so the feature always works.
-import Anthropic from '@anthropic-ai/sdk';
+// Uses Groq (fast open-weight model hosting) when GROQ_API_KEY is set;
+// otherwise (or on any failure) falls back to deterministic rule-based text
+// so the feature always works.
 import { config } from '../config.js';
 
-const client = config.anthropicApiKey ? new Anthropic({ apiKey: config.anthropicApiKey }) : null;
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
-export const aiEnabled = Boolean(client);
+export const aiEnabled = Boolean(config.groqApiKey);
 
 const SYSTEM_PROMPT = `You write the "AI insight" panel of a consumer weather app.
-You receive JSON with a city's current conditions, the provider's 3-day forecast, and a
+You receive JSON with a city's current conditions, the 7-day forecast, and a
 statistical model's temperature/rain predictions for the following days (with confidence).
 Write for a general audience in the requested language ("en" = English, "fr" = French).
+Respond with only a JSON object shaped exactly like {"summary": string, "tips": string[]}.
 - summary: 2-3 sentences describing what the coming week looks like and how sure we are.
   Mention that later days are model estimates when their confidence is low.
 - tips: 2 to 4 short, practical suggestions (clothing, outdoor plans, hydration, umbrella...),
   each under 90 characters, grounded only in the data provided.
 Use °C. Do not invent data that is not in the input.`;
 
-const INSIGHT_SCHEMA = {
-  type: 'object',
-  properties: {
-    summary: { type: 'string' },
-    tips: { type: 'array', items: { type: 'string' } },
-  },
-  required: ['summary', 'tips'],
-  additionalProperties: false,
-};
+class GroqError extends Error {
+  constructor(status, message) {
+    super(message);
+    this.status = status;
+  }
+}
 
-async function claudeInsight(payload, lang) {
-  const response = await client.beta.messages.create({
-    model: config.aiModel,
-    max_tokens: 16000,
-    // On a safety decline, let the API retry on its recommended fallback model.
-    betas: ['server-side-fallback-2026-07-01'],
-    fallbacks: 'default',
-    output_config: { effort: 'low', format: { type: 'json_schema', schema: INSIGHT_SCHEMA } },
-    system: SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: JSON.stringify({ language: lang, ...payload }) }],
+async function groqInsight(payload, lang) {
+  const response = await fetch(GROQ_URL, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${config.groqApiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: config.aiModel,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: JSON.stringify({ language: lang, ...payload }) },
+      ],
+    }),
+    signal: AbortSignal.timeout(15000),
   });
 
-  if (response.stop_reason === 'refusal') throw new Error('Model declined the request');
-  const text = response.content.find((block) => block.type === 'text')?.text;
-  if (!text) throw new Error(`No text in response (stop_reason: ${response.stop_reason})`);
+  if (!response.ok) {
+    const body = await response.text().catch(() => '');
+    throw new GroqError(response.status, `Groq ${response.status}: ${body.slice(0, 200)}`);
+  }
+
+  const data = await response.json();
+  const text = data.choices?.[0]?.message?.content;
+  if (!text) throw new Error('No content in Groq response');
 
   const parsed = JSON.parse(text);
-  return { source: 'claude', summary: parsed.summary, tips: parsed.tips.slice(0, 4) };
+  return { source: 'groq', summary: parsed.summary, tips: parsed.tips.slice(0, 4) };
 }
 
 const TEXT = {
@@ -97,13 +103,13 @@ export function ruleInsight({ current, forecast, prediction }, lang) {
 }
 
 export async function buildInsight(payload, lang) {
-  if (client) {
+  if (config.groqApiKey) {
     try {
-      return await claudeInsight(payload, lang);
+      return await groqInsight(payload, lang);
     } catch (error) {
-      if (error instanceof Anthropic.RateLimitError) console.warn('[ai] rate limited, using rules');
-      else if (error instanceof Anthropic.AuthenticationError) console.error('[ai] invalid ANTHROPIC_API_KEY');
-      else if (error instanceof Anthropic.APIError) console.error(`[ai] API error ${error.status}: ${error.message}`);
+      if (error instanceof GroqError && error.status === 401) console.error('[ai] invalid GROQ_API_KEY');
+      else if (error instanceof GroqError && error.status === 429) console.warn('[ai] rate limited, using rules');
+      else if (error instanceof GroqError) console.error(`[ai] Groq API error ${error.status}: ${error.message}`);
       else console.error('[ai] insight failed:', error.message);
     }
   }

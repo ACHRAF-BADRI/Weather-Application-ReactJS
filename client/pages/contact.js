@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { api } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/lib/toast';
 
-// Submissions are handled by Netlify Forms (no back-end or database needed):
-// Netlify detects this form in the exported HTML thanks to data-netlify="true".
+// Messages are sent to the API server, which emails them to the site owner
+// (address configured in server/.env, see server/src/contact.js).
 export default function ContactPage() {
   const { t } = useI18n();
   const toast = useToast();
@@ -11,25 +12,15 @@ export default function ContactPage() {
 
   async function onSubmit(event) {
     event.preventDefault();
-    // Only Netlify receives the messages. The local dev server answers 200 to any POST,
-    // so say so instead of pretending the message was sent.
-    if (process.env.NODE_ENV === 'development') {
-      toast.info(t('contact.devOnly'));
-      return;
-    }
-    setSending(true);
     const form = event.currentTarget;
+    setSending(true);
     try {
-      const response = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(new FormData(form)).toString(),
-      });
-      if (!response.ok) throw new Error(String(response.status));
+      await api.contact(Object.fromEntries(new FormData(form)));
       form.reset();
       toast.success(t('contact.success'));
-    } catch {
-      toast.error(t('contact.error'));
+    } catch (error) {
+      const key = error.status === 400 ? 'invalid' : error.status === 429 ? 'tooMany' : error.status === 0 ? 'network' : 'error';
+      toast.error(key === 'network' ? t('errors.network') : t(`contact.${key}`));
     } finally {
       setSending(false);
     }
@@ -40,25 +31,23 @@ export default function ContactPage() {
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{t('contact.title')}</h1>
       <p className="mt-2 text-muted">{t('contact.subtitle')}</p>
 
-      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={onSubmit} className="glass mt-6 space-y-4 p-5 sm:p-6">
-        <input type="hidden" name="form-name" value="contact" />
-        <p hidden>
-          <label>
-            Don’t fill this out: <input name="bot-field" />
-          </label>
-        </p>
+      <form onSubmit={onSubmit} className="glass mt-6 space-y-4 p-5 sm:p-6">
+        {/* Honeypot: invisible to people, bots fill it in and get silently ignored */}
+        <label aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+          Website <input name="website" tabIndex={-1} autoComplete="off" />
+        </label>
 
         <label className="block">
           <span className="label">{t('contact.name')}</span>
-          <input name="name" required autoComplete="name" className="input mt-1.5" />
+          <input name="name" required maxLength={100} autoComplete="name" className="input mt-1.5" />
         </label>
         <label className="block">
           <span className="label">{t('contact.email')}</span>
-          <input name="email" type="email" required autoComplete="email" className="input mt-1.5" />
+          <input name="email" type="email" required maxLength={254} autoComplete="email" className="input mt-1.5" />
         </label>
         <label className="block">
           <span className="label">{t('contact.message')}</span>
-          <textarea name="message" rows={5} required className="input mt-1.5 resize-y" />
+          <textarea name="message" rows={5} required maxLength={5000} className="input mt-1.5 resize-y" />
         </label>
 
         <button type="submit" className="btn-primary w-full py-3 sm:w-auto sm:px-8" disabled={sending}>

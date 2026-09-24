@@ -6,6 +6,8 @@ import { config } from './config.js';
 import { weatherApi, HttpError } from './weatherApi.js';
 import { getPrediction } from './ai/predictService.js';
 import { aiEnabled } from './ai/insights.js';
+import { contactEnabled, validateContact, sendContactEmail } from './contact.js';
+import { buildDailyForecast } from './dailyForecast.js';
 
 const app = express();
 app.set('trust proxy', 1); // Render runs behind a proxy; needed for per-IP rate limiting
@@ -13,7 +15,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: (origin, callback) => callback(null, !origin || config.allowedOrigins.includes(origin)),
-    methods: ['GET'],
+    methods: ['GET', 'POST'],
   }),
 );
 
@@ -28,13 +30,14 @@ function readQuery(req) {
 }
 
 app.get('/api/health', (req, res) => {
-  res.json({ ok: true, ai: aiEnabled });
+  res.json({ ok: true, ai: aiEnabled, contact: contactEnabled });
 });
 
-// Current conditions + 3-day forecast (with hourly data) in one call.
+// Current conditions + hourly data (WeatherAPI) + `daily`: a 7-day forecast.
 app.get('/api/weather', async (req, res) => {
   const { q, lang } = readQuery(req);
-  res.json(await weatherApi('forecast', { q, days: 3, lang, aqi: 'no', alerts: 'no' }));
+  const data = await weatherApi('forecast', { q, days: 3, lang, aqi: 'no', alerts: 'no' });
+  res.json({ ...data, daily: await buildDailyForecast(data, lang) });
 });
 
 app.get('/api/search', async (req, res) => {
@@ -49,16 +52,28 @@ app.get('/api/predict', limiter(40), async (req, res) => {
   res.json(await getPrediction(q, lang));
 });
 
+// Contact form → email to the site owner. Strict limit to discourage spam.
+app.post('/api/contact', limiter(5), express.json({ limit: '20kb' }), async (req, res) => {
+  const { data, errors } = validateContact(req.body);
+  if (errors.length) return res.status(400).json({ error: 'Invalid fields', fields: errors });
+  if (!data.isBot) await sendContactEmail(data); // bots get a fake success
+  res.json({ ok: true });
+});
+
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
 // Express 5 forwards rejected promises from async handlers here.
 app.use((err, req, res, next) => {
-  const status = err instanceof HttpError ? err.status : 500;
+  // HttpError carries its own status; body-parser errors (bad JSON, too large) come with a 4xx status.
+  const clientError = !(err instanceof HttpError) && err.status >= 400 && err.status < 500;
+  const status = err instanceof HttpError || clientError ? err.status : 500;
   if (status >= 500) console.error(err);
-  res.status(status).json({ error: status >= 500 && !(err instanceof HttpError) ? 'Internal server error' : err.message });
+  const message = err instanceof HttpError ? err.message : clientError ? 'Invalid request body' : 'Internal server error';
+  res.status(status).json({ error: message });
 });
 
 app.listen(config.port, () => {
-  console.log(`Weather API listening on port ${config.port} (AI insights: ${aiEnabled ? 'Claude' : 'rule-based'})`);
+  console.log(`Weather API listening on port ${config.port} (AI insights: ${aiEnabled ? 'Groq' : 'rule-based'})`);
   console.log(`Allowed origins: ${config.allowedOrigins.join(', ')}`);
+  console.log(`Contact form emails: ${contactEnabled ? `enabled → ${config.contact.toEmail}` : 'disabled (set RESEND_API_KEY and CONTACT_TO_EMAIL)'}`);
 });

@@ -1,12 +1,27 @@
-import { formatDay } from '@/lib/format';
+import { useEffect, useState } from 'react';
+import { useI18n } from '@/lib/i18n';
+import { formatDay, round } from '@/lib/format';
 
 const W = 640;
 const H = 220;
 const PAD = { top: 16, right: 16, bottom: 40, left: 36 };
+const TOOLTIP_W = 152;
 
 // Line chart of daily highs/lows: observed → provider forecast → AI estimate
 // (dashed, with its 80% uncertainty band).
 export default function TempChart({ observed, forecast, predicted, lang, labels }) {
+  const { t } = useI18n();
+  const [hover, setHover] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
   const known = [...observed, ...forecast];
   const all = [...known, ...predicted];
   const values = [
@@ -36,9 +51,27 @@ export default function TempChart({ observed, forecast, predicted, lang, labels 
 
   const firstForecast = observed.length;
 
+  const nearestIndex = (clientX, svgEl) => {
+    const rect = svgEl.getBoundingClientRect();
+    const svgX = ((clientX - rect.left) * W) / rect.width;
+    const ratio = (svgX - PAD.left) / (W - PAD.left - PAD.right);
+    const idx = Math.round(ratio * (all.length - 1));
+    return Math.min(Math.max(idx, 0), all.length - 1);
+  };
+
   return (
     <div className="-mx-2 overflow-x-auto px-2">
-      <svg viewBox={`0 0 ${W} ${H}`} className="min-w-[560px]" role="img" aria-label={labels.aria}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className={`min-w-[560px] cursor-crosshair ${isMobile ? '' : 'touch-none'}`}
+        role="img"
+        aria-label={labels.aria}
+        onMouseMove={(e) => !isMobile && setHover(nearestIndex(e.clientX, e.currentTarget))}
+        onMouseLeave={() => setHover(null)}
+        onTouchStart={(e) => !isMobile && setHover(nearestIndex(e.touches[0].clientX, e.currentTarget))}
+        onTouchMove={(e) => !isMobile && setHover(nearestIndex(e.touches[0].clientX, e.currentTarget))}
+        onTouchEnd={() => setHover(null)}
+      >
         {observed.length > 0 && (
           <rect x={PAD.left} y={PAD.top} width={x(firstForecast) - PAD.left - 10} height={H - PAD.top - PAD.bottom} className="fill-tint" opacity="0.03" rx="8" />
         )}
@@ -63,11 +96,29 @@ export default function TempChart({ observed, forecast, predicted, lang, labels 
 
         {all.map((d, i) => {
           const isAi = i > lastKnown;
+          const isHovered = hover === i;
           return (
             <g key={d.date}>
-              <circle cx={x(i)} cy={y(d.max)} r="3.5" className={isAi ? 'fill-ai' : 'fill-accent'}>
-                <title>{`${formatDay(d.date, lang)}: ${d.min}° / ${d.max}°`}</title>
-              </circle>
+              <line
+                x1={x(i)}
+                x2={x(i)}
+                y1={PAD.top}
+                y2={H - PAD.bottom}
+                className="stroke-tint"
+                opacity={isHovered ? 0.25 : 0}
+              />
+              <circle cx={x(i)} cy={y(d.max)} r={isHovered ? 5 : 3.5} className={isAi ? 'fill-ai' : 'fill-accent'} />
+              <circle
+                cx={x(i)}
+                cy={y(d.max)}
+                r="14"
+                fill="transparent"
+                tabIndex={0}
+                aria-label={`${formatDay(d.date, lang)}: ${round(d.min)}° / ${round(d.max)}°`}
+                className="focus:outline-none"
+                onFocus={() => setHover(i)}
+                onBlur={() => setHover((h) => (h === i ? null : h))}
+              />
               <text x={x(i)} y={H - PAD.bottom + 18} textAnchor="middle" fontSize="11" className={isAi ? 'fill-ai' : 'fill-subtle'}>
                 {formatDay(d.date, lang, { weekday: 'short' })}
               </text>
@@ -77,6 +128,38 @@ export default function TempChart({ observed, forecast, predicted, lang, labels 
             </g>
           );
         })}
+
+        {hover !== null &&
+          (() => {
+            const d = all[hover];
+            const isAi = hover > lastKnown;
+            const lines = [
+              `${round(d.min)}° / ${round(d.max)}°`,
+              ...(isAi
+                ? [
+                    `${t('ai.range')}: ${round(d.maxRange[0])}–${round(d.maxRange[1])}°`,
+                    `${t('ai.confidence')} ${d.confidence}% · 💧${d.rainChance}%`,
+                  ]
+                : []),
+            ];
+            const boxH = 24 + lines.length * 16;
+            const left = Math.min(Math.max(x(hover) - TOOLTIP_W / 2, PAD.left), W - PAD.right - TOOLTIP_W);
+            const above = y(d.max) - boxH - 14 >= PAD.top;
+            const top = above ? y(d.max) - boxH - 10 : y(d.max) + 10;
+            return (
+              <g pointerEvents="none">
+                <rect x={left} y={top} width={TOOLTIP_W} height={boxH} rx="10" className="fill-shade stroke-tint" strokeOpacity="0.15" opacity="0.97" />
+                <text x={left + 10} y={top + 18} fontSize="11" fontWeight="600" className="fill-fg">
+                  {formatDay(d.date, lang)}
+                </text>
+                {lines.map((line, k) => (
+                  <text key={k} x={left + 10} y={top + 34 + k * 16} fontSize="10.5" className="fill-fg-soft">
+                    {line}
+                  </text>
+                ))}
+              </g>
+            );
+          })()}
       </svg>
 
       <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-subtle">

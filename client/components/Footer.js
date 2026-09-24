@@ -7,14 +7,29 @@ export default function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 text-center sm:flex-row sm:px-6">
         <p>
           © {new Date().getFullYear()} · {t('footer.by', { name: 'Achraf El Badri' })} ·{' '}
-          <a className="text-accent hover:underline" href="https://github.com/ACHRAF-BADRI/Weather-Application-ReactJS">
+          <a
+            className="text-accent hover:underline"
+            href="https://github.com/ACHRAF-BADRI/Weather-Application-ReactJS"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             GitHub
           </a>
         </p>
         <p>
           {t('footer.poweredBy')}{' '}
-          <a className="text-accent hover:underline" href="https://www.weatherapi.com/" title="Free Weather API">
+          <a
+            className="text-accent hover:underline"
+            href="https://www.weatherapi.com/"
+            title="Free Weather API"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             WeatherAPI.com
+          </a>{' '}
+          &amp;{' '}
+          <a className="text-accent hover:underline" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">
+            Open-Meteo
           </a>
         </p>
       </div>

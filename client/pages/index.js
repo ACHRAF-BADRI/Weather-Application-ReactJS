@@ -68,7 +68,7 @@ export default function Home() {
   return (
     <>
       <section className="mb-6 text-center sm:mb-8">
-        <h1 className="bg-gradient-to-r from-fg via-fg-soft to-accent bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-5xl">
+        <h1 className="bg-gradient-to-r from-fg via-fg-soft to-accent bg-clip-text pb-1 text-3xl font-bold leading-tight tracking-tight text-transparent sm:text-5xl">
           {t('home.title')}
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-muted sm:text-lg">{t('home.subtitle')}</p>
@@ -76,14 +76,42 @@ export default function Home() {
 
       <section className="relative z-10 mx-auto mb-8 flex max-w-2xl flex-col gap-3 sm:flex-row sm:items-start">
         <CitySearch onAdd={addCity} />
-        <button type="button" className="btn-ghost self-end py-3 sm:self-auto" onClick={() => setPending({ type: 'reset' })}>
+        <button type="button" className="btn-ghost self-center py-3 sm:self-auto" onClick={() => setPending({ type: 'reset' })}>
           ↺ {t('home.reset')}
         </button>
       </section>
 
 
       {cities.length === 0 ? (
-        <p className="glass p-10 text-center text-muted">{t('home.empty')}</p>
+        <div className="flex flex-col items-center gap-5 py-10 text-center">
+          <div className="relative">
+            <div aria-hidden className="absolute inset-0 -z-10 rounded-full bg-gradient-to-br from-sky-400 to-amber-300 opacity-25 blur-3xl" />
+            <svg aria-hidden viewBox="0 0 160 130" width="180" height="146" className="max-w-[240px]">
+              <defs>
+                <linearGradient id="homeEmptySun" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stopColor="#fbbf24" />
+                  <stop offset="1" stopColor="#f97316" />
+                </linearGradient>
+              </defs>
+
+              <circle cx="122" cy="34" r="15" fill="url(#homeEmptySun)" />
+
+              <path
+                d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"
+                transform="translate(35 45) scale(3.3)"
+                className="fill-shade stroke-tint"
+                strokeWidth="0.5"
+                strokeOpacity="0.5"
+              />
+
+              <g className="stroke-accent" strokeWidth="4.5" strokeLinecap="round" fill="none" opacity="0.85">
+                <circle cx="118" cy="95" r="11" />
+                <line x1="125.8" y1="102.8" x2="137" y2="114" />
+              </g>
+            </svg>
+          </div>
+          <p className="text-muted">{t('home.empty')}</p>
+        </div>
       ) : (
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cities.map((city) => (
