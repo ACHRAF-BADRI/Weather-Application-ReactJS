@@ -31,7 +31,7 @@ A modern, mobile-friendly weather dashboard built with **Next.js + Tailwind CSS*
 
 - Current weather for your cities: 5 defaults, plus search to add your own (saved in your browser)
 - City search with autocomplete (keyboard and touch friendly)
-- City page: detailed conditions, interactive map, next 24 hours and a **7-day forecast**
+- City page: detailed conditions, interactive map, next 24 hours and a **3-day forecast**
 - **AI prediction**: learns from the past 7 days and the 7-day forecast to estimate the 4 days after, with a trend, an uncertainty range, rain chance and a confidence score, plus a short written summary and practical tips
 - English / French, auto-detected from the browser and switchable in the header (weather descriptions are translated too)
 - Light and dark mode, following the system setting by default
@@ -48,7 +48,7 @@ Browser ──▶ client/ (Next.js static site, hosted on Netlify)
                ▼
             server/ (Express API, hosted on Render)  ──▶ WeatherAPI.com (current, hourly, days 1-3, history)
                │                                     ──▶ Open-Meteo (days 4-7, no key needed)
-               │                                     ──▶ Anthropic API (AI summary, optional)
+               │                                     ──▶ Groq API (AI summary, optional)
                │                                     ──▶ Resend (contact emails, optional)
             keys in server/.env (local) or Render env vars (prod)
 ```
@@ -133,7 +133,7 @@ Spam protection: a hidden honeypot field, input validation, and a limit of 5 mes
 
 ## Tech stack
 
-Next.js 14 (static export) · React 18 · Tailwind CSS · Leaflet / OpenStreetMap · Express 5 · WeatherAPI.com · Open-Meteo · Resend · Anthropic API (optional)
+Next.js 14 (static export) · React 18 · Tailwind CSS · Leaflet / OpenStreetMap · Express 5 · WeatherAPI.com · Open-Meteo · Resend · Groq API (optional)
 
 ## Credits
 
