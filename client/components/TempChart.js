@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 import { formatDay, round } from '@/lib/format';
 
@@ -12,6 +12,16 @@ const TOOLTIP_W = 152;
 export default function TempChart({ observed, forecast, predicted, lang, labels }) {
   const { t } = useI18n();
   const [hover, setHover] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
   const known = [...observed, ...forecast];
   const all = [...known, ...predicted];
   const values = [
@@ -53,13 +63,13 @@ export default function TempChart({ observed, forecast, predicted, lang, labels 
     <div className="-mx-2 overflow-x-auto px-2">
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        className="min-w-[560px] touch-none cursor-crosshair"
+        className={`min-w-[560px] cursor-crosshair ${isMobile ? '' : 'touch-none'}`}
         role="img"
         aria-label={labels.aria}
-        onMouseMove={(e) => setHover(nearestIndex(e.clientX, e.currentTarget))}
+        onMouseMove={(e) => !isMobile && setHover(nearestIndex(e.clientX, e.currentTarget))}
         onMouseLeave={() => setHover(null)}
-        onTouchStart={(e) => setHover(nearestIndex(e.touches[0].clientX, e.currentTarget))}
-        onTouchMove={(e) => setHover(nearestIndex(e.touches[0].clientX, e.currentTarget))}
+        onTouchStart={(e) => !isMobile && setHover(nearestIndex(e.touches[0].clientX, e.currentTarget))}
+        onTouchMove={(e) => !isMobile && setHover(nearestIndex(e.touches[0].clientX, e.currentTarget))}
         onTouchEnd={() => setHover(null)}
       >
         {observed.length > 0 && (

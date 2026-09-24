@@ -73,7 +73,7 @@ const fr = {
     rainChance: 'Pluie',
     range: 'Fourchette probable',
     tips: 'Conseils',
-    sourceClaude: 'Analyse rédigée par Claude',
+    sourceGroq: 'Analyse rédigée par IA (Groq)',
     sourceRules: 'Analyse issue de règles intégrées',
     disclaimer: 'Estimation statistique (modèle à tendance amortie). Consultez les prévisions officielles pour vos projets importants.',
   },

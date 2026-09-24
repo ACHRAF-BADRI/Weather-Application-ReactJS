@@ -73,7 +73,7 @@ const en = {
     rainChance: 'Rain',
     range: 'Likely range',
     tips: 'Tips',
-    sourceClaude: 'Insight written by Claude',
+    sourceGroq: 'Insight written by AI (Groq)',
     sourceRules: 'Insight from built-in rules',
     disclaimer: 'Statistical estimate (damped-trend model). Always check official forecasts for important plans.',
   },

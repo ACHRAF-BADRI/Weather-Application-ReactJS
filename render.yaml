@@ -15,7 +15,7 @@ services:
         value: "22"
       - key: WEATHER_API_KEY
         sync: false
-      - key: ANTHROPIC_API_KEY
+      - key: GROQ_API_KEY
         sync: false
       # Contact form emails (see server/.env.example)
       - key: RESEND_API_KEY

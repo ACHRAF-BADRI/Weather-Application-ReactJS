@@ -73,7 +73,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(config.port, () => {
-  console.log(`Weather API listening on port ${config.port} (AI insights: ${aiEnabled ? 'Claude' : 'rule-based'})`);
+  console.log(`Weather API listening on port ${config.port} (AI insights: ${aiEnabled ? 'Groq' : 'rule-based'})`);
   console.log(`Allowed origins: ${config.allowedOrigins.join(', ')}`);
   console.log(`Contact form emails: ${contactEnabled ? `enabled → ${config.contact.toEmail}` : 'disabled (set RESEND_API_KEY and CONTACT_TO_EMAIL)'}`);
 });

@@ -23,10 +23,10 @@ export const config = {
   port: Number(process.env.PORT) || 4000,
   weatherApiKey: required('WEATHER_API_KEY'),
 
-  // Optional: enables Claude-written insights. Without it the app still
+  // Optional: enables AI-written insights via Groq. Without it the app still
   // returns the statistical prediction plus rule-based advice.
-  anthropicApiKey: process.env.ANTHROPIC_API_KEY?.trim() || null,
-  aiModel: process.env.AI_MODEL?.trim() || 'claude-opus-5',
+  groqApiKey: process.env.GROQ_API_KEY?.trim() || null,
+  aiModel: process.env.AI_MODEL?.trim() || 'openai/gpt-oss-120b',
 
   // Comma-separated list of front-end origins allowed to call this API.
   allowedOrigins: list(process.env.ALLOWED_ORIGINS, 'http://localhost:3000'),

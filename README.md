@@ -62,7 +62,7 @@ All keys are read in **one file**, [server/src/config.js](server/src/config.js),
 | Variable | Where | Required |
 |---|---|---|
 | `WEATHER_API_KEY` | `server/.env` locally, Render dashboard in production | yes ([free key](https://www.weatherapi.com/signup.aspx)) |
-| `ANTHROPIC_API_KEY` | same | optional: AI-written summary instead of the built-in rules |
+| `GROQ_API_KEY` | same | optional: AI-written summary instead of the built-in rules ([free key](https://console.groq.com)) |
 | `RESEND_API_KEY` | same | optional: enables contact form emails ([free account](https://resend.com)) |
 | `CONTACT_TO_EMAIL` | same | the address that receives contact messages |
 | `ALLOWED_ORIGINS` | same | your front-end URL(s) |
@@ -74,7 +74,7 @@ All keys are read in **one file**, [server/src/config.js](server/src/config.js),
 
 1. The server fetches the last 7 days of observed weather and the 7-day forecast.
 2. A **damped-trend exponential smoothing** model (Holt's method), see [forecastModel.js](server/src/ai/forecastModel.js), learns the level and trend of daily highs/lows and extends them 4 more days. Its past errors give an 80% uncertainty band that widens with distance. Rain chance comes from recent wet days.
-3. The numbers are turned into a short summary and practical tips, either by a language model (when `ANTHROPIC_API_KEY` is set) or by built-in rules. Results are cached for 1 hour per city and language.
+3. The numbers are turned into a short summary and practical tips, either by a language model (when `GROQ_API_KEY` is set) or by built-in rules. Results are cached for 1 hour per city and language.
 
 ## Run locally
 
@@ -101,7 +101,7 @@ Run the server tests with `cd server && npm test`.
 ### 1. Back-end on Render
 1. Push this repo to GitHub.
 2. On [Render](https://dashboard.render.com): **New → Blueprint**, select the repo. It reads [render.yaml](render.yaml).
-3. Fill in the secrets it asks for: `WEATHER_API_KEY`, optionally `ANTHROPIC_API_KEY`, `RESEND_API_KEY` + `CONTACT_TO_EMAIL` (contact emails), and `ALLOWED_ORIGINS` (your Netlify URL once you have it, e.g. `https://my-weather-app.netlify.app`).
+3. Fill in the secrets it asks for: `WEATHER_API_KEY`, optionally `GROQ_API_KEY`, `RESEND_API_KEY` + `CONTACT_TO_EMAIL` (contact emails), and `ALLOWED_ORIGINS` (your Netlify URL once you have it, e.g. `https://my-weather-app.netlify.app`).
 4. Note the service URL, e.g. `https://weather-app-api.onrender.com`, and check that `/api/health` returns `{"ok":true}`.
 
 > Render's free plan sleeps after 15 minutes of inactivity; the first request then takes up to about a minute. The app shows a "waking up the server" banner meanwhile.

@@ -112,7 +112,7 @@ export default function AIPrediction({ q }) {
               </>
             )}
             <p className="mt-4 text-xs text-faint">
-              {data.insight.source === 'claude' ? t('ai.sourceClaude') : t('ai.sourceRules')} · {t('ai.disclaimer')}
+              {data.insight.source === 'groq' ? t('ai.sourceGroq') : t('ai.sourceRules')} · {t('ai.disclaimer')}
             </p>
           </div>
         </div>
