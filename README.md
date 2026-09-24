@@ -2,6 +2,8 @@
 
 A modern, mobile-friendly weather dashboard built with **Next.js + Tailwind CSS**, backed by a small **Node/Express API** that keeps the API keys secret and adds an **AI prediction** of the coming days.
 
+**Live demo:** [achrafweather.netlify.app](https://achrafweather.netlify.app/)
+
 ## Screenshots
 
 <table>
